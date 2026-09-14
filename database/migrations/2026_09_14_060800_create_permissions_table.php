@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name', 150)->unique();
+            $table->string('display_name', 150);
+            $table->string('module', 50)->index();
+
+            $table->text('description')->nullable();
+
             $table->timestamps();
         });
     }

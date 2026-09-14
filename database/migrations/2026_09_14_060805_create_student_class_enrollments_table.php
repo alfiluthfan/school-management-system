@@ -13,7 +13,32 @@ return new class extends Migration
     {
         Schema::create('student_class_enrollments', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('student_id')
+                ->constrained('students')
+                ->restrictOnDelete();
+
+            $table->foreignId('class_id')
+                ->constrained('school_classes')
+                ->restrictOnDelete();
+
+            $table->date('joined_at');
+            $table->date('left_at')->nullable();
+
+            $table->string('status', 30)
+                ->default('ACTIVE');
+
             $table->timestamps();
+
+            $table->unique([
+                'student_id',
+                'class_id'
+            ]);
+
+            $table->index([
+                'class_id',
+                'status'
+            ]);
         });
     }
 

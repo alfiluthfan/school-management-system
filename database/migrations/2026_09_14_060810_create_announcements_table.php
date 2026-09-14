@@ -13,7 +13,39 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->restrictOnDelete();
+
+            $table->foreignId('class_id')
+                ->nullable()
+                ->constrained('school_classes')
+                ->nullOnDelete();
+
+            $table->string('title', 200);
+
+            $table->text('content');
+
+            $table->string('target_scope', 30)
+                ->default('SCHOOL');
+
+            $table->timestamp('publish_at')
+                ->nullable();
+
+            $table->timestamp('expired_at')
+                ->nullable();
+
+            $table->string('status', 30)
+                ->default('DRAFT');
+
             $table->timestamps();
+
+            $table->index([
+                'status',
+                'publish_at'
+            ]);
         });
     }
 

@@ -13,6 +13,22 @@ return new class extends Migration
     {
         Schema::create('school_locations', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+
+            $table->string('code', 30)->unique();
+            $table->string('name', 100);
+
+            $table->text('address')->nullable();
+
+            $table->decimal('latitude', 10, 7);
+            $table->decimal('longitude', 10, 7);
+
+            $table->unsignedInteger('radius_meters')
+                ->default(100);
+
+            $table->boolean('is_active')
+                ->default(true);
+
             $table->timestamps();
         });
     }

@@ -13,7 +13,36 @@ return new class extends Migration
     {
         Schema::create('teacher_leaves', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+
+            $table->foreignId('teacher_id')
+                ->constrained('teachers')
+                ->restrictOnDelete();
+
+            $table->date('start_date');
+            $table->date('end_date');
+
+            $table->string('leave_type', 30);
+
+            $table->text('reason');
+
+            $table->string('attachment_path')
+                ->nullable();
+
+            $table->string('status', 30)
+                ->default('PENDING');
+
             $table->timestamps();
+
+            $table->index([
+                'teacher_id',
+                'status'
+            ]);
+
+            $table->index([
+                'start_date',
+                'end_date'
+            ]);
         });
     }
 

@@ -13,7 +13,33 @@ return new class extends Migration
     {
         Schema::create('school_classes', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+
+            $table->foreignId('academic_year_id')
+                ->constrained('academic_years')
+                ->restrictOnDelete();
+
+            $table->foreignId('homeroom_teacher_id')
+                ->nullable()
+                ->constrained('teachers')
+                ->nullOnDelete();
+
+            $table->string('code', 30);
+            $table->string('name', 100);
+
+            $table->string('grade_level', 20);
+            $table->string('major', 100)->nullable();
+
+            $table->string('status', 30)
+                ->default('ACTIVE');
+
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->unique([
+                'academic_year_id',
+                'code'
+            ]);
         });
     }
 
