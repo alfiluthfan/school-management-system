@@ -61,8 +61,8 @@ class Student extends Model
                 'relationship',
                 'is_primary_contact',
                 'receive_notification',
-                'created_at',
-            ]);
+            ])
+            ->withTimestamps();
     }
 
     public function enrollments(): HasMany

@@ -30,8 +30,7 @@ return new class extends Migration
             $table->boolean('receive_notification')
                 ->default(true);
 
-            $table->timestamp('created_at')->useCurrent();
-
+            $table->timestamps();
             $table->unique([
                 'parent_id',
                 'student_id'
