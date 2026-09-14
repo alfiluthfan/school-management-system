@@ -7,6 +7,7 @@ use App\Models\Concerns\HasPublicUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Finance\SavingAccountStatus;
 
 class SavingAccount extends Model
 {
@@ -24,6 +25,7 @@ class SavingAccount extends Model
     protected function casts(): array
     {
         return [
+            'status' => SavingAccountStatus::class,
             'current_balance' => 'decimal:2',
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',

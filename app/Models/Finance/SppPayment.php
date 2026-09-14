@@ -8,6 +8,8 @@ use App\Models\System\Approval;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Enums\Finance\PaymentMethod;
+use App\Enums\Finance\SppPaymentStatus;
 
 class SppPayment extends Model
 {
@@ -32,7 +34,11 @@ class SppPayment extends Model
     protected function casts(): array
     {
         return [
+            'payment_method' => PaymentMethod::class,
+            'status' => SppPaymentStatus::class,
+
             'amount' => 'decimal:2',
+
             'payment_date' => 'datetime',
             'voided_at' => 'datetime',
         ];

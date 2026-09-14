@@ -8,6 +8,7 @@ use App\Models\Concerns\HasPublicUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Finance\SppBillStatus;
 
 class SppBill extends Model
 {
@@ -29,10 +30,14 @@ class SppBill extends Model
     protected function casts(): array
     {
         return [
+            'status' => SppBillStatus::class,
+
             'billing_month' => 'integer',
             'billing_year' => 'integer',
+
             'amount' => 'decimal:2',
             'paid_amount' => 'decimal:2',
+
             'due_date' => 'date',
         ];
     }

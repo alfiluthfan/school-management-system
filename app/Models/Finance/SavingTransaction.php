@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Enums\Finance\SavingTransactionStatus;
+use App\Enums\Finance\SavingTransactionType;
 
 class SavingTransaction extends Model
 {
@@ -31,9 +33,13 @@ class SavingTransaction extends Model
     protected function casts(): array
     {
         return [
+            'transaction_type' => SavingTransactionType::class,
+            'status' => SavingTransactionStatus::class,
+
             'amount' => 'decimal:2',
             'balance_before' => 'decimal:2',
             'balance_after' => 'decimal:2',
+
             'transaction_date' => 'datetime',
         ];
     }
