@@ -2,6 +2,9 @@
 
 namespace App\Models\Communication;
 
+use App\Enums\Communication\NotificationChannel;
+use App\Enums\Communication\NotificationStatus;
+use App\Enums\Communication\NotificationType;
 use App\Models\Academic\Student;
 use App\Models\Auth\User;
 use App\Models\Concerns\HasPublicUuid;
@@ -15,6 +18,7 @@ class NotificationLog extends Model
     protected $table = 'notifications';
 
     protected $fillable = [
+        'dedupe_key',
         'recipient_user_id',
         'student_id',
         'type',
@@ -34,16 +38,24 @@ class NotificationLog extends Model
     protected function casts(): array
     {
         return [
+            'type' => NotificationType::class,
+            'channel' => NotificationChannel::class,
+            'status' => NotificationStatus::class,
+
             'scheduled_at' => 'datetime',
             'sent_at' => 'datetime',
             'failed_at' => 'datetime',
+
             'retry_count' => 'integer',
         ];
     }
 
     public function recipientUser(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'recipient_user_id');
+        return $this->belongsTo(
+            User::class,
+            'recipient_user_id'
+        );
     }
 
     public function student(): BelongsTo

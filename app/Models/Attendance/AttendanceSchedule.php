@@ -7,6 +7,7 @@ use App\Models\Concerns\HasPublicUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\Attendance\AttendanceType;
 
 class AttendanceSchedule extends Model
 {
@@ -32,9 +33,13 @@ class AttendanceSchedule extends Model
     protected function casts(): array
     {
         return [
+            'attendance_type' => AttendanceType::class,
+
             'day_of_week' => 'integer',
             'late_tolerance_minutes' => 'integer',
+
             'is_active' => 'boolean',
+
             'effective_from' => 'date',
             'effective_until' => 'date',
         ];

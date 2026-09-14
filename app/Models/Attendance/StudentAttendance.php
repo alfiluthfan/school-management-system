@@ -10,6 +10,8 @@ use App\Models\System\Approval;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Enums\Attendance\AttendanceSource;
+use App\Enums\Attendance\AttendanceStatus;
 
 class StudentAttendance extends Model
 {
@@ -41,15 +43,22 @@ class StudentAttendance extends Model
     {
         return [
             'attendance_date' => 'date',
+
             'check_in_at' => 'datetime',
             'check_out_at' => 'datetime',
+
             'check_in_latitude' => 'decimal:7',
             'check_in_longitude' => 'decimal:7',
+
             'check_out_latitude' => 'decimal:7',
             'check_out_longitude' => 'decimal:7',
+
             'location_accuracy' => 'decimal:2',
             'distance_from_school' => 'decimal:2',
+
+            'status' => AttendanceStatus::class,
             'late_minutes' => 'integer',
+            'source' => AttendanceSource::class,
         ];
     }
 
