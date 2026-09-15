@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\NotificationMonitoringController;
 use App\Http\Controllers\Api\V1\ApprovalController;
 use App\Http\Controllers\Api\V1\SavingReversalApprovalController;
+use App\Http\Controllers\Api\V1\AttendanceCorrectionApprovalController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -25,6 +26,16 @@ Route::prefix('v1')
 
             Route::get('/{studentAttendance}', [StudentAttendanceController::class, 'show'])
                 ->name('api.v1.student-attendances.show');
+
+            Route::post(
+                '/student-attendances/{studentAttendance}/correction-requests',
+                [
+                    AttendanceCorrectionApprovalController::class,
+                    'store',
+                ]
+            )->name(
+                'api.v1.student-attendances.correction-requests.store'
+            );
         });
         Route::prefix('admin/notifications')
             ->group(function (): void {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Approvals;
 
+use App\Models\Attendance\StudentAttendance;
 use App\Models\Finance\SavingTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -29,8 +30,10 @@ class ApprovalResource extends JsonResource
             ],
 
             'reason' => $this->reason,
-            'request_payload' => $this->request_payload,
-            'review_notes' => $this->review_notes,
+            'request_payload' =>
+                $this->request_payload,
+            'review_notes' =>
+                $this->review_notes,
             'reviewed_at' =>
                 $this->reviewed_at?->toIso8601String(),
 
@@ -38,8 +41,10 @@ class ApprovalResource extends JsonResource
                 'requester',
                 fn (): ?array => $this->requester
                     ? [
-                        'uuid' => $this->requester->uuid,
-                        'name' => $this->requester->name,
+                        'uuid' =>
+                            $this->requester->uuid,
+                        'name' =>
+                            $this->requester->name,
                     ]
                     : null
             ),
@@ -48,15 +53,18 @@ class ApprovalResource extends JsonResource
                 'reviewer',
                 fn (): ?array => $this->reviewer
                     ? [
-                        'uuid' => $this->reviewer->uuid,
-                        'name' => $this->reviewer->name,
+                        'uuid' =>
+                            $this->reviewer->uuid,
+                        'name' =>
+                            $this->reviewer->name,
                     ]
                     : null
             ),
 
             'entity' => $this->whenLoaded(
                 'entity',
-                fn (): ?array => $this->entitySummary()
+                fn (): ?array =>
+                    $this->entitySummary()
             ),
 
             'created_at' =>
@@ -77,18 +85,24 @@ class ApprovalResource extends JsonResource
             'uuid' => $this->entity->uuid ?? null,
         ];
 
-        if ($this->entity instanceof SavingTransaction) {
+        if (
+            $this->entity
+            instanceof SavingTransaction
+        ) {
             return [
                 ...$base,
                 'transaction_number' =>
                     $this->entity->transaction_number,
                 'transaction_type' => [
                     'value' =>
-                        $this->entity->transaction_type->value,
+                        $this->entity
+                            ->transaction_type->value,
                     'label' =>
-                        $this->entity->transaction_type->label(),
+                        $this->entity
+                            ->transaction_type->label(),
                 ],
-                'amount' => $this->entity->amount,
+                'amount' =>
+                    $this->entity->amount,
                 'status' => [
                     'value' =>
                         $this->entity->status->value,
@@ -98,6 +112,48 @@ class ApprovalResource extends JsonResource
                 'transaction_date' =>
                     $this->entity->transaction_date
                         ?->toIso8601String(),
+            ];
+        }
+
+        if (
+            $this->entity
+            instanceof StudentAttendance
+        ) {
+            $this->entity->loadMissing(
+                'student.user'
+            );
+
+            return [
+                ...$base,
+                'student' => [
+                    'uuid' =>
+                        $this->entity->student?->uuid,
+                    'nis' =>
+                        $this->entity->student?->nis,
+                    'name' =>
+                        $this->entity
+                            ->student?->user?->name,
+                ],
+                'attendance_date' =>
+                    $this->entity
+                        ->attendance_date
+                        ?->toDateString(),
+                'status' => [
+                    'value' =>
+                        $this->entity->status->value,
+                    'label' =>
+                        $this->entity->status->label(),
+                ],
+                'check_in_at' =>
+                    $this->entity
+                        ->check_in_at
+                        ?->toIso8601String(),
+                'check_out_at' =>
+                    $this->entity
+                        ->check_out_at
+                        ?->toIso8601String(),
+                'late_minutes' =>
+                    $this->entity->late_minutes,
             ];
         }
 

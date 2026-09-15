@@ -317,6 +317,7 @@ final class RbacCatalog
                 'student-attendance.mark.permission',
                 'student-attendance.report',
                 'student-attendance.export',
+                'student-attendance.correct',
 
                 'teacher-attendance.check-in',
                 'teacher-attendance.check-out',
