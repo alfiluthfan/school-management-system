@@ -12,6 +12,7 @@ use App\Models\Finance\SppPayment;
 use App\Models\Finance\SavingAccount;
 use App\Models\Finance\SppBill;
 use App\Models\Communication\NotificationLog;
+use App\Models\System\Approval;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
             'spp_bill'           => SppBill::class,
             'spp_payment' => SppPayment::class,
             'notification_log'   => NotificationLog::class,
+            'approval' => Approval::class,
         ]);
     }
 }

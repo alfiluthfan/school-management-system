@@ -16,8 +16,10 @@ class ApprovalPolicy
         ]);
     }
 
-    public function view(User $user, Approval $approval): Response
-    {
+    public function view(
+        User $user,
+        Approval $approval
+    ): Response {
         if ($user->hasPermission('approval.view.all')) {
             return Response::allow();
         }
@@ -37,13 +39,19 @@ class ApprovalPolicy
         return $user->hasPermission('approval.submit');
     }
 
-    public function approve(User $user, Approval $approval): bool
-    {
-        return $user->hasPermission('approval.approve');
+    public function approve(
+        User $user,
+        Approval $approval
+    ): bool {
+        return $user->hasPermission('approval.approve')
+            && $approval->requested_by !== $user->id;
     }
 
-    public function reject(User $user, Approval $approval): bool
-    {
-        return $user->hasPermission('approval.reject');
+    public function reject(
+        User $user,
+        Approval $approval
+    ): bool {
+        return $user->hasPermission('approval.reject')
+            && $approval->requested_by !== $user->id;
     }
 }

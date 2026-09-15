@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\SppPaymentController;
 use App\Http\Controllers\Api\V1\StudentAttendanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\NotificationMonitoringController;
+use App\Http\Controllers\Api\V1\ApprovalController;
+use App\Http\Controllers\Api\V1\SavingReversalApprovalController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -95,10 +97,53 @@ Route::prefix('v1')
             [SavingTransactionController::class, 'show']
         )->name('api.v1.saving-transactions.show');
 
+        // Route::post(
+        //     '/saving-transactions/{savingTransaction}/reversal',
+        //     [SavingTransactionController::class, 'reverse']
+        // )->name('api.v1.saving-transactions.reversal.store');
         Route::post(
-            '/saving-transactions/{savingTransaction}/reversal',
-            [SavingTransactionController::class, 'reverse']
-        )->name('api.v1.saving-transactions.reversal.store');
+            '/saving-transactions/{savingTransaction}/reversal-requests',
+            [
+                SavingReversalApprovalController::class,
+                'store',
+            ]
+        )->name(
+            'api.v1.saving-transactions.reversal-requests.store'
+        );
+
+        Route::prefix('approvals')->group(function (): void {
+            Route::get(
+                '/',
+                [
+                    ApprovalController::class,
+                    'index',
+                ]
+            )->name('api.v1.approvals.index');
+
+            Route::get(
+                '/{approval}',
+                [
+                    ApprovalController::class,
+                    'show',
+                ]
+            )->name('api.v1.approvals.show');
+
+            Route::post(
+                '/{approval}/approve',
+                [
+                    ApprovalController::class,
+                    'approve',
+                ]
+            )->name('api.v1.approvals.approve');
+
+            Route::post(
+                '/{approval}/reject',
+                [
+                    ApprovalController::class,
+                    'reject',
+                ]
+            )->name('api.v1.approvals.reject');
+        });
 
         Route::get('/spp-bills', [SppBillController::class, 'index'])
             ->name('api.v1.spp-bills.index');

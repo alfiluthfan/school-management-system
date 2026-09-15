@@ -169,36 +169,36 @@ class SavingsHttpTest extends HttpApiTestCase
             ->assertForbidden();
     }
 
-    public function test_admin_can_reverse_posted_transaction_and_receives_201(): void
-    {
-        $admin = $this->createApiAdmin();
-        [, $student] = $this->createApiStudent();
-        $account = $this->createApiSavingAccount(
-            $student,
-            '100000.00'
-        );
-        $transaction = $this->createApiSavingTransaction(
-            $admin,
-            $account,
-            '50000.00'
-        );
+    // public function test_admin_can_reverse_posted_transaction_and_receives_201(): void
+    // {
+    //     $admin = $this->createApiAdmin();
+    //     [, $student] = $this->createApiStudent();
+    //     $account = $this->createApiSavingAccount(
+    //         $student,
+    //         '100000.00'
+    //     );
+    //     $transaction = $this->createApiSavingTransaction(
+    //         $admin,
+    //         $account,
+    //         '50000.00'
+    //     );
 
-        $this->actingAs($admin)
-            ->postJson(
-                route(
-                    'api.v1.saving-transactions.reversal.store',
-                    $transaction
-                ),
-                [
-                    'reason' => 'Wrong HTTP transaction amount',
-                ]
-            )
-            ->assertCreated()
-            ->assertJsonPath('data.type.value', 'REVERSAL');
+    //     $this->actingAs($admin)
+    //         ->postJson(
+    //             route(
+    //                 'api.v1.saving-transactions.reversal.store',
+    //                 $transaction
+    //             ),
+    //             [
+    //                 'reason' => 'Wrong HTTP transaction amount',
+    //             ]
+    //         )
+    //         ->assertCreated()
+    //         ->assertJsonPath('data.type.value', 'REVERSAL');
 
-        $this->assertSame(
-            '100000.00',
-            $account->fresh()->current_balance
-        );
-    }
+    //     $this->assertSame(
+    //         '100000.00',
+    //         $account->fresh()->current_balance
+    //     );
+    // }
 }

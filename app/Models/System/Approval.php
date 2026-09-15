@@ -2,6 +2,9 @@
 
 namespace App\Models\System;
 
+use App\Enums\System\ApprovalAction;
+use App\Enums\System\ApprovalModule;
+use App\Enums\System\ApprovalStatus;
 use App\Models\Auth\User;
 use App\Models\Concerns\HasPublicUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +16,7 @@ class Approval extends Model
     use HasPublicUuid;
 
     protected $fillable = [
+        'pending_key',
         'requested_by',
         'reviewed_by',
         'module',
@@ -29,6 +33,9 @@ class Approval extends Model
     protected function casts(): array
     {
         return [
+            'module' => ApprovalModule::class,
+            'action' => ApprovalAction::class,
+            'status' => ApprovalStatus::class,
             'request_payload' => 'array',
             'reviewed_at' => 'datetime',
         ];
