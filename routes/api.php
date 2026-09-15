@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\TeacherLeaveApprovalController;
 use App\Http\Controllers\Api\V1\SppPaymentVoidApprovalController;
 use App\Http\Controllers\Api\V1\SppPaymentCorrectionApprovalController;
 use App\Http\Controllers\Api\V1\TeacherAttendanceController;
+use App\Http\Controllers\Api\V1\AnnouncementController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -83,6 +84,82 @@ Route::prefix('v1')
                     ]
                 )->name(
                     'api.v1.admin.notifications.retry'
+                );
+            });
+
+        Route::prefix('announcements')
+            ->group(function (): void {
+                /*
+         * Static routes MUST stay before /{announcement}.
+         */
+                Route::get(
+                    '/mine',
+                    [
+                        AnnouncementController::class,
+                        'mine',
+                    ]
+                )->name(
+                    'api.v1.announcements.mine'
+                );
+
+                Route::get(
+                    '/',
+                    [
+                        AnnouncementController::class,
+                        'index',
+                    ]
+                )->name(
+                    'api.v1.announcements.index'
+                );
+
+                Route::post(
+                    '/',
+                    [
+                        AnnouncementController::class,
+                        'store',
+                    ]
+                )->name(
+                    'api.v1.announcements.store'
+                );
+
+                Route::get(
+                    '/{announcement}',
+                    [
+                        AnnouncementController::class,
+                        'show',
+                    ]
+                )->name(
+                    'api.v1.announcements.show'
+                );
+
+                Route::patch(
+                    '/{announcement}',
+                    [
+                        AnnouncementController::class,
+                        'update',
+                    ]
+                )->name(
+                    'api.v1.announcements.update'
+                );
+
+                Route::post(
+                    '/{announcement}/publish',
+                    [
+                        AnnouncementController::class,
+                        'publish',
+                    ]
+                )->name(
+                    'api.v1.announcements.publish'
+                );
+
+                Route::post(
+                    '/{announcement}/archive',
+                    [
+                        AnnouncementController::class,
+                        'archive',
+                    ]
+                )->name(
+                    'api.v1.announcements.archive'
                 );
             });
 

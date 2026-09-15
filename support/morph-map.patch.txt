@@ -1,26 +1,21 @@
-Because the project uses Relation::enforceMorphMap(), add TeacherAttendance to
-the SAME existing morph map.
+Because AuditLogger calls getMorphClass(), add Announcement to the SAME existing
+Relation::enforceMorphMap() map:
 
-use App\Models\Attendance\TeacherAttendance;
+use App\Models\Communication\Announcement;
 
 Relation::enforceMorphMap([
     // keep all existing aliases...
 
-    'teacher_attendance' => TeacherAttendance::class,
+    'announcement' => Announcement::class,
 ]);
-
-Do not create a second enforceMorphMap() call if you already have one.
 
 Verify:
 
 php artisan tinker
 
-(new \App\Models\Attendance\TeacherAttendance())
+(new \App\Models\Communication\Announcement())
     ->getMorphClass();
 
 Expected:
 
-"teacher_attendance"
-
-This alias is required because AuditLogger calls getMorphClass() for teacher
-check-in/check-out audit records.
+"announcement"

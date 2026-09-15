@@ -1,0 +1,46 @@
+No new permission names are required.
+
+Existing catalog:
+
+announcement.view
+announcement.create.school
+announcement.create.class
+announcement.update.own
+announcement.delete.own
+announcement.publish
+
+Current intended mapping:
+
+Admin:
+- all permissions
+
+Principal:
+- announcement.view
+- announcement.create.school
+- announcement.update.own
+- announcement.delete.own
+- announcement.publish
+
+Teacher:
+- announcement.view
+- announcement.create.class
+- announcement.update.own
+- announcement.delete.own
+- announcement.publish
+
+Student:
+- announcement.view
+
+Parent:
+- announcement.view
+
+Class creation authorization also uses existing class scope:
+
+Admin:
+- class.view.all + announcement.create.class -> any class
+
+Teacher:
+- announcement.create.class + homeroom_teacher_id match -> assigned class only
+
+Principal:
+- no announcement.create.class -> cannot create class announcement

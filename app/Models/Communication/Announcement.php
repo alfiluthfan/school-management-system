@@ -2,6 +2,8 @@
 
 namespace App\Models\Communication;
 
+use App\Enums\Communication\AnnouncementStatus;
+use App\Enums\Communication\AnnouncementTargetScope;
 use App\Models\Academic\SchoolClass;
 use App\Models\Auth\Role;
 use App\Models\Auth\User;
@@ -29,24 +31,38 @@ class Announcement extends Model
     protected function casts(): array
     {
         return [
-            'publish_at' => 'datetime',
-            'expired_at' => 'datetime',
+            'target_scope' =>
+                AnnouncementTargetScope::class,
+            'status' =>
+                AnnouncementStatus::class,
+            'publish_at' =>
+                'datetime',
+            'expired_at' =>
+                'datetime',
         ];
     }
 
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(
+            User::class,
+            'created_by'
+        );
     }
 
     public function schoolClass(): BelongsTo
     {
-        return $this->belongsTo(SchoolClass::class, 'class_id');
+        return $this->belongsTo(
+            SchoolClass::class,
+            'class_id'
+        );
     }
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'announcement_roles')
-            ->using(AnnouncementRole::class);
+        return $this->belongsToMany(
+            Role::class,
+            'announcement_roles'
+        )->using(AnnouncementRole::class);
     }
 }
