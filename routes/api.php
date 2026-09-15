@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\AttendanceCorrectionApprovalController;
 use App\Http\Controllers\Api\V1\TeacherLeaveApprovalController;
 use App\Http\Controllers\Api\V1\SppPaymentVoidApprovalController;
 use App\Http\Controllers\Api\V1\SppPaymentCorrectionApprovalController;
+use App\Http\Controllers\Api\V1\TeacherAttendanceController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -158,6 +159,54 @@ Route::prefix('v1')
                 ]
             )->name('api.v1.approvals.reject');
         });
+
+        Route::prefix('teacher-attendances')
+            ->group(function (): void {
+                /*
+         * Static routes MUST stay before
+         * /{teacherAttendance}.
+         */
+                Route::post(
+                    '/check-in',
+                    [
+                        TeacherAttendanceController::class,
+                        'checkIn',
+                    ]
+                )->name(
+                    'api.v1.teacher-attendances.check-in'
+                );
+
+                Route::post(
+                    '/check-out',
+                    [
+                        TeacherAttendanceController::class,
+                        'checkOut',
+                    ]
+                )->name(
+                    'api.v1.teacher-attendances.check-out'
+                );
+
+                Route::get(
+                    '/',
+                    [
+                        TeacherAttendanceController::class,
+                        'index',
+                    ]
+                )->name(
+                    'api.v1.teacher-attendances.index'
+                );
+
+                Route::get(
+                    '/{teacherAttendance}',
+                    [
+                        TeacherAttendanceController::class,
+                        'show',
+                    ]
+                )->name(
+                    'api.v1.teacher-attendances.show'
+                );
+            });
+
 
         Route::get('/spp-bills', [SppBillController::class, 'index'])
             ->name('api.v1.spp-bills.index');

@@ -1,19 +1,26 @@
-Keep the existing Relation::enforceMorphMap() and verify/add:
+Because the project uses Relation::enforceMorphMap(), add TeacherAttendance to
+the SAME existing morph map.
 
-use App\Models\Attendance\TeacherLeave;
-use App\Models\Finance\SppPayment;
+use App\Models\Attendance\TeacherAttendance;
 
 Relation::enforceMorphMap([
-    // existing aliases...
-    'approval' => Approval::class,
-    'saving_transaction' => SavingTransaction::class,
-    'student_attendance' => StudentAttendance::class,
-    'teacher_leave' => TeacherLeave::class,
-    'spp_payment' => SppPayment::class,
+    // keep all existing aliases...
+
+    'teacher_attendance' => TeacherAttendance::class,
 ]);
 
-`spp_payment` may already exist. Do not duplicate the key.
+Do not create a second enforceMorphMap() call if you already have one.
 
 Verify:
-(new \App\Models\Attendance\TeacherLeave())->getMorphClass(); // teacher_leave
-(new \App\Models\Finance\SppPayment())->getMorphClass(); // spp_payment
+
+php artisan tinker
+
+(new \App\Models\Attendance\TeacherAttendance())
+    ->getMorphClass();
+
+Expected:
+
+"teacher_attendance"
+
+This alias is required because AuditLogger calls getMorphClass() for teacher
+check-in/check-out audit records.

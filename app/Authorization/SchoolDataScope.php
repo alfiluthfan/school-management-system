@@ -5,6 +5,7 @@ namespace App\Authorization;
 use App\Models\Academic\SchoolClass;
 use App\Models\Academic\Student;
 use App\Models\Attendance\StudentAttendance;
+use App\Models\Attendance\TeacherAttendance;
 use App\Models\Auth\User;
 use App\Models\Finance\SavingAccount;
 use App\Models\Finance\SavingTransaction;
@@ -32,7 +33,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
 
@@ -41,11 +42,11 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'enrollments',
-                    fn(Builder $query) => $query
+                    fn (Builder $query) => $query
                         ->where('status', 'ACTIVE')
                         ->whereHas(
                             'schoolClass',
-                            fn(Builder $classQuery) => $classQuery
+                            fn (Builder $classQuery) => $classQuery
                                 ->where('homeroom_teacher_id', $teacherId)
                         )
                 );
@@ -71,7 +72,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'enrollments',
-                    fn(Builder $query) => $query
+                    fn (Builder $query) => $query
                         ->where('student_id', $studentId)
                         ->where('status', 'ACTIVE')
                 );
@@ -82,11 +83,11 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'enrollments',
-                    fn(Builder $query) => $query
+                    fn (Builder $query) => $query
                         ->where('status', 'ACTIVE')
                         ->whereHas(
                             'student.guardians',
-                            fn(Builder $guardianQuery) => $guardianQuery
+                            fn (Builder $guardianQuery) => $guardianQuery
                                 ->where('parents.id', $guardianId)
                         )
                 );
@@ -106,7 +107,7 @@ final class SchoolDataScope
             if ($user->hasPermission('student-attendance.view.own')) {
                 $scope->orWhereHas(
                     'student',
-                    fn(Builder $query) => $query->where('user_id', $user->id)
+                    fn (Builder $query) => $query->where('user_id', $user->id)
                 );
             }
 
@@ -118,7 +119,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'student.guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
 
@@ -128,11 +129,44 @@ final class SchoolDataScope
             ) {
                 $scope->orWhereHas(
                     'schoolClass',
-                    fn(Builder $query) => $query
+                    fn (Builder $query) => $query
                         ->where('homeroom_teacher_id', $user->teacher->id)
                 );
             }
         });
+    }
+
+
+    public static function teacherAttendances(User $user): Builder
+    {
+        $query = TeacherAttendance::query();
+
+        if (
+            $user->hasPermission(
+                'teacher-attendance.view.all'
+            )
+        ) {
+            return $query;
+        }
+
+        if (
+            $user->hasPermission(
+                'teacher-attendance.view.own'
+            )
+            && $user->teacher
+        ) {
+            return $query->where(
+                'teacher_id',
+                $user->teacher->id
+            );
+        }
+
+        /*
+         * Defense-in-depth:
+         * a role with view.own but without a teacher
+         * profile must never receive an unscoped query.
+         */
+        return $query->whereRaw('1 = 0');
     }
 
     public static function savingAccounts(User $user): Builder
@@ -147,7 +181,7 @@ final class SchoolDataScope
             if ($user->hasPermission('saving.balance.view.own')) {
                 $scope->orWhereHas(
                     'student',
-                    fn(Builder $query) => $query->where('user_id', $user->id)
+                    fn (Builder $query) => $query->where('user_id', $user->id)
                 );
             }
 
@@ -159,7 +193,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'student.guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
         });
@@ -177,7 +211,7 @@ final class SchoolDataScope
             if ($user->hasPermission('saving.transaction.view.own')) {
                 $scope->orWhereHas(
                     'savingAccount.student',
-                    fn(Builder $query) => $query->where('user_id', $user->id)
+                    fn (Builder $query) => $query->where('user_id', $user->id)
                 );
             }
 
@@ -189,7 +223,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'savingAccount.student.guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
         });
@@ -207,7 +241,7 @@ final class SchoolDataScope
             if ($user->hasPermission('spp.bill.view.own')) {
                 $scope->orWhereHas(
                     'student',
-                    fn(Builder $query) => $query->where('user_id', $user->id)
+                    fn (Builder $query) => $query->where('user_id', $user->id)
                 );
             }
 
@@ -216,7 +250,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'student.guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
         });
@@ -234,7 +268,7 @@ final class SchoolDataScope
             if ($user->hasPermission('spp.payment.view.own')) {
                 $scope->orWhereHas(
                     'bill.student',
-                    fn(Builder $query) => $query->where('user_id', $user->id)
+                    fn (Builder $query) => $query->where('user_id', $user->id)
                 );
             }
 
@@ -246,7 +280,7 @@ final class SchoolDataScope
 
                 $scope->orWhereHas(
                     'bill.student.guardians',
-                    fn(Builder $query) => $query->where('parents.id', $guardianId)
+                    fn (Builder $query) => $query->where('parents.id', $guardianId)
                 );
             }
         });
