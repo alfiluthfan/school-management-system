@@ -1,0 +1,20 @@
+No new permission names are required.
+
+Teacher already uses:
+- teacher-leave.create
+- teacher-leave.view.own
+- approval.submit
+- approval.view.own
+
+Principal already uses:
+- teacher-leave.view.all
+- approval.view.all
+- approval.approve
+- approval.reject
+
+Admin receives all permissions, including:
+- spp.payment.void
+- spp.payment.correct
+- approval.submit
+
+Principal remains reviewer and does not need spp.payment.void / spp.payment.correct.

@@ -1,11 +1,19 @@
-If your project uses Relation::enforceMorphMap(), add NotificationLog:
+Keep the existing Relation::enforceMorphMap() and verify/add:
 
-use App\Models\Communication\NotificationLog;
+use App\Models\Attendance\TeacherLeave;
+use App\Models\Finance\SppPayment;
 
 Relation::enforceMorphMap([
-    // existing entries...
-    'notification' => NotificationLog::class,
+    // existing aliases...
+    'approval' => Approval::class,
+    'saving_transaction' => SavingTransaction::class,
+    'student_attendance' => StudentAttendance::class,
+    'teacher_leave' => TeacherLeave::class,
+    'spp_payment' => SppPayment::class,
 ]);
 
-This is required because RetryFailedNotificationAction writes an AuditLog
-whose entity is the NotificationLog model.
+`spp_payment` may already exist. Do not duplicate the key.
+
+Verify:
+(new \App\Models\Attendance\TeacherLeave())->getMorphClass(); // teacher_leave
+(new \App\Models\Finance\SppPayment())->getMorphClass(); // spp_payment

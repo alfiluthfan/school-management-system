@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Enums\Finance\PaymentMethod;
 use App\Enums\Finance\SppPaymentStatus;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SppPayment extends Model
 {
@@ -29,6 +30,7 @@ class SppPayment extends Model
         'voided_by',
         'voided_at',
         'void_reason',
+        'replaces_payment_id',
     ];
 
     protected function casts(): array
@@ -62,5 +64,14 @@ class SppPayment extends Model
     public function approvals(): MorphMany
     {
         return $this->morphMany(Approval::class, 'entity');
+    }
+    public function replacesPayment(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'replaces_payment_id');
+    }
+
+    public function replacementPayment(): HasOne
+    {
+        return $this->hasOne(self::class, 'replaces_payment_id');
     }
 }

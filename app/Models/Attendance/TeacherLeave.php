@@ -8,6 +8,8 @@ use App\Models\System\Approval;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Enums\Attendance\TeacherLeaveStatus;
+use App\Enums\Attendance\TeacherLeaveType;
 
 class TeacherLeave extends Model
 {
@@ -28,6 +30,8 @@ class TeacherLeave extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'leave_type' => TeacherLeaveType::class,
+            'status' => TeacherLeaveStatus::class,
         ];
     }
 

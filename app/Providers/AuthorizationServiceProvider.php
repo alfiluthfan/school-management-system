@@ -23,6 +23,8 @@ use App\Policies\StudentPolicy;
 use App\Policies\TeacherAttendancePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Attendance\TeacherLeave;
+use App\Policies\TeacherLeavePolicy;
 
 class AuthorizationServiceProvider extends ServiceProvider
 {
@@ -55,5 +57,6 @@ class AuthorizationServiceProvider extends ServiceProvider
         Gate::policy(SppBill::class, SppBillPolicy::class);
         Gate::policy(SppPayment::class, SppPaymentPolicy::class);
         Gate::policy(Approval::class, ApprovalPolicy::class);
+        Gate::policy(TeacherLeave::class, TeacherLeavePolicy::class);
     }
 }
