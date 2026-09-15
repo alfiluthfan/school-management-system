@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\SppBillController;
 use App\Http\Controllers\Api\V1\SppPaymentController;
 use App\Http\Controllers\Api\V1\StudentAttendanceController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Admin\NotificationMonitoringController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -23,6 +24,50 @@ Route::prefix('v1')
             Route::get('/{studentAttendance}', [StudentAttendanceController::class, 'show'])
                 ->name('api.v1.student-attendances.show');
         });
+        Route::prefix('admin/notifications')
+            ->group(function (): void {
+
+                Route::get(
+                    '/',
+                    [
+                        NotificationMonitoringController::class,
+                        'index',
+                    ]
+                )->name(
+                    'api.v1.admin.notifications.index'
+                );
+
+                // Harus di atas /{notificationLog}
+                Route::get(
+                    '/stats',
+                    [
+                        NotificationMonitoringController::class,
+                        'stats',
+                    ]
+                )->name(
+                    'api.v1.admin.notifications.stats'
+                );
+
+                Route::get(
+                    '/{notificationLog}',
+                    [
+                        NotificationMonitoringController::class,
+                        'show',
+                    ]
+                )->name(
+                    'api.v1.admin.notifications.show'
+                );
+
+                Route::post(
+                    '/{notificationLog}/retry',
+                    [
+                        NotificationMonitoringController::class,
+                        'retry',
+                    ]
+                )->name(
+                    'api.v1.admin.notifications.retry'
+                );
+            });
 
         Route::get('/saving-accounts', [SavingAccountController::class, 'index'])
             ->name('api.v1.saving-accounts.index');

@@ -1,0 +1,11 @@
+If your project uses Relation::enforceMorphMap(), add NotificationLog:
+
+use App\Models\Communication\NotificationLog;
+
+Relation::enforceMorphMap([
+    // existing entries...
+    'notification' => NotificationLog::class,
+]);
+
+This is required because RetryFailedNotificationAction writes an AuditLog
+whose entity is the NotificationLog model.

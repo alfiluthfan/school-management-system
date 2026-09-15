@@ -3,6 +3,33 @@
 return [
     'queue' => env('SCHOOL_NOTIFICATION_QUEUE', 'notifications'),
 
+    'spp_overdue' => [
+        'enabled' => env(
+            'SPP_OVERDUE_SCHEDULER_ENABLED',
+            true
+        ),
+
+        'schedule_time' => env(
+            'SPP_OVERDUE_SCHEDULE_TIME',
+            '07:00'
+        ),
+
+        'first_reminder_after_days' => (int) env(
+            'SPP_OVERDUE_FIRST_REMINDER_AFTER_DAYS',
+            1
+        ),
+
+        'reminder_interval_days' => (int) env(
+            'SPP_OVERDUE_REMINDER_INTERVAL_DAYS',
+            3
+        ),
+
+        'chunk_size' => (int) env(
+            'SPP_OVERDUE_CHUNK_SIZE',
+            200
+        ),
+    ],
+
     'whatsapp' => [
         /*
          * "log" is safe for local development.
