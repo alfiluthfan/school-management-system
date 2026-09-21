@@ -11,6 +11,8 @@ use App\Http\Controllers\Web\PortalApprovalController;
 use App\Http\Controllers\Web\PortalApprovalDecisionController;
 use App\Http\Controllers\Web\PortalFinanceController;
 use App\Http\Controllers\Web\PortalFinanceActionController;
+use App\Http\Controllers\Web\PortalAnnouncementController;
+use App\Http\Controllers\Web\PortalAnnouncementActionController;
 
 Route::get('/', fn() => redirect()->route('portal.dashboard'));
 
@@ -70,6 +72,23 @@ Route::middleware(['auth', EnsurePortalAccountActive::class])->group(function ()
     )
         ->middleware(['can:view,sppBill', 'can:view,sppPayment', 'can:void,sppPayment'])
         ->name('portal.finance.spp.void-requests.store');
+
+    Route::get('/announcements', [PortalAnnouncementController::class, 'index'])
+        ->name('portal.announcements.index');
+    Route::get('/announcements/create', [PortalAnnouncementController::class, 'create'])
+        ->name('portal.announcements.create');
+    Route::post('/announcements', [PortalAnnouncementActionController::class, 'store'])
+        ->name('portal.announcements.store');
+    Route::get('/announcements/{announcement}', [PortalAnnouncementController::class, 'show'])
+        ->middleware('can:view,announcement')->name('portal.announcements.show');
+    Route::get('/announcements/{announcement}/edit', [PortalAnnouncementController::class, 'edit'])
+        ->middleware('can:update,announcement')->name('portal.announcements.edit');
+    Route::patch('/announcements/{announcement}', [PortalAnnouncementActionController::class, 'update'])
+        ->middleware('can:update,announcement')->name('portal.announcements.update');
+    Route::post('/announcements/{announcement}/publish', [PortalAnnouncementActionController::class, 'publish'])
+        ->middleware('can:publish,announcement')->name('portal.announcements.publish');
+    Route::post('/announcements/{announcement}/archive', [PortalAnnouncementActionController::class, 'archive'])
+        ->middleware('can:archive,announcement')->name('portal.announcements.archive');
 
     Route::post('/logout', [PortalAuthController::class, 'destroy'])->name('portal.logout');
 });
