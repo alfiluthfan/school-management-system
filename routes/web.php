@@ -13,6 +13,8 @@ use App\Http\Controllers\Web\PortalFinanceController;
 use App\Http\Controllers\Web\PortalFinanceActionController;
 use App\Http\Controllers\Web\PortalAnnouncementController;
 use App\Http\Controllers\Web\PortalAnnouncementActionController;
+use App\Http\Controllers\Web\PortalReportingController;
+use App\Http\Controllers\Web\PortalReportExportController;
 
 Route::get('/', fn() => redirect()->route('portal.dashboard'));
 
@@ -89,6 +91,15 @@ Route::middleware(['auth', EnsurePortalAccountActive::class])->group(function ()
         ->middleware('can:publish,announcement')->name('portal.announcements.publish');
     Route::post('/announcements/{announcement}/archive', [PortalAnnouncementActionController::class, 'archive'])
         ->middleware('can:archive,announcement')->name('portal.announcements.archive');
+
+    Route::get('/reports', [PortalReportingController::class, 'index'])
+        ->name('portal.reports.index');
+    Route::post('/reports/exports', [PortalReportExportController::class, 'store'])
+        ->middleware('throttle:6,1')->name('portal.reports.exports.store');
+    Route::get('/reports/exports/{reportExport}/status', [PortalReportExportController::class, 'status'])
+        ->name('portal.reports.exports.status');
+    Route::get('/reports/exports/{reportExport}/download', [PortalReportExportController::class, 'download'])
+        ->name('portal.reports.exports.download');
 
     Route::post('/logout', [PortalAuthController::class, 'destroy'])->name('portal.logout');
 });
