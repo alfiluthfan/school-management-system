@@ -1,0 +1,25 @@
+<script setup>
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+import AppLayout from '../../Layouts/AppLayout.vue'
+import { ClipboardCheck, CheckCheck, Wallet, Megaphone, FileChartColumn, FileDown, LockKeyhole, CheckCircle2 } from 'lucide-vue-next'
+
+const page = usePage()
+const permissions = computed(() => page.props.auth?.user?.permissions ?? [])
+const has = (names) => names.some((name) => permissions.value.includes(name))
+const modules = [
+  { title: 'Absensi', description: 'Kehadiran siswa, guru, dan check-in mandiri.', icon: ClipboardCheck, permissions: ['student-attendance.view.all','student-attendance.view.class','student-attendance.view.own','student-attendance.view.child','teacher-attendance.view.own','teacher-attendance.view.all'] },
+  { title: 'Persetujuan', description: 'Approval koreksi absensi, izin guru, dan transaksi.', icon: CheckCheck, permissions: ['approval.view.own','approval.view.all'] },
+  { title: 'Keuangan', description: 'Saldo tabungan, tagihan SPP, dan transaksi.', icon: Wallet, permissions: ['saving.balance.view.all','saving.balance.view.own','saving.balance.view.child','spp.bill.view.all','spp.bill.view.own','spp.bill.view.child'] },
+  { title: 'Pengumuman', description: 'Berita sekolah dan kelas berdasarkan audience.', icon: Megaphone, permissions: ['announcement.view'] },
+  { title: 'Laporan', description: 'Analitik kehadiran, SPP, dan tabungan.', icon: FileChartColumn, permissions: ['report.attendance.student','report.attendance.teacher','report.saving','report.spp'] },
+  { title: 'Ekspor laporan', description: 'Antrean PDF/Excel dengan download privat.', icon: FileDown, permissions: ['report.export.pdf','report.export.excel'] },
+]
+</script>
+<template>
+  <AppLayout title="Modul aplikasi" subtitle="Peta integrasi fitur. Menu hanya akan diaktifkan ketika halaman dan otorisasinya selesai diuji.">
+    <section class="panel roadmap-intro"><div class="roadmap-icon"><CheckCircle2 :size="23" aria-hidden="true" /></div><div><h2>Fondasi sudah terhubung</h2><p>Login, sesi, izin akses, navigasi, dan dashboard menggunakan data backend yang sudah ada. Kartu di bawah menunjukkan modul yang akan disambungkan pada fase berikutnya; belum merupakan halaman aktif.</p></div></section>
+    <div class="section-heading"><div><p class="page-eyebrow">TAHAP BERIKUTNYA</p><h2>Ruang kerja per modul</h2></div></div>
+    <div class="module-grid"><article v-for="(module, index) in modules" :key="module.title" class="module-card" :class="{ 'module-unavailable': !has(module.permissions) }"><div class="module-card-top"><span class="module-icon"><component :is="module.icon" :size="23" aria-hidden="true" /></span><span class="phase-label">Tahap {{ index + 2 }}</span></div><h3>{{ module.title }}</h3><p>{{ module.description }}</p><span v-if="has(module.permissions)" class="module-access"><CheckCircle2 :size="15" aria-hidden="true" /> Izin dasar tersedia · UI menyusul</span><span v-else class="module-access module-access-muted"><LockKeyhole :size="15" aria-hidden="true" /> Tidak termasuk akses akun ini</span></article></div>
+  </AppLayout>
+</template>
