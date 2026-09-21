@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
-import { LayoutDashboard, Boxes, GraduationCap, Menu, X, LogOut, ChevronRight, PanelLeftClose, ShieldCheck } from 'lucide-vue-next'
+import { LayoutDashboard, Boxes, ClipboardCheck, GraduationCap, Menu, X, LogOut, ChevronRight, PanelLeftClose, ShieldCheck } from 'lucide-vue-next'
 
 const props = defineProps({ title: { type: String, default: 'Dashboard' }, subtitle: { type: String, default: '' } })
 const page = usePage()
@@ -20,6 +20,7 @@ onMounted(() => {
   offNavigate = router.on('navigate', () => { drawerOpen.value = false })
 })
 onUnmounted(() => { offStart?.(); offFinish?.(); offNavigate?.() })
+const canAttendance = computed(() => ['student-attendance.view.all', 'student-attendance.view.class', 'student-attendance.view.own', 'student-attendance.view.child', 'teacher-attendance.view.all', 'teacher-attendance.view.own'].some(permission => user.value?.permissions?.includes(permission)))
 const active = (route) => page.url === route || page.url.startsWith(`${route}?`)
 </script>
 
@@ -34,8 +35,9 @@ const active = (route) => page.url === route || page.url.startsWith(`${route}?`)
         <p class="nav-label">RUANG KERJA</p>
         <Link class="nav-link" href="/dashboard" :class="{ 'nav-active': active('/dashboard') }" :aria-current="active('/dashboard') ? 'page' : undefined"><LayoutDashboard :size="19" aria-hidden="true" /><span>Dashboard</span><ChevronRight v-if="active('/dashboard')" :size="15" class="nav-chevron" aria-hidden="true" /></Link>
         <Link class="nav-link" href="/modules" :class="{ 'nav-active': active('/modules') }" :aria-current="active('/modules') ? 'page' : undefined"><Boxes :size="19" aria-hidden="true" /><span>Modul aplikasi</span><ChevronRight v-if="active('/modules')" :size="15" class="nav-chevron" aria-hidden="true" /></Link>
+        <Link v-if="canAttendance" class="nav-link" href="/attendance" :class="{ 'nav-active': active('/attendance') }" :aria-current="active('/attendance') ? 'page' : undefined"><ClipboardCheck :size="19" aria-hidden="true" /><span>Absensi</span><ChevronRight v-if="active('/attendance')" :size="15" class="nav-chevron" aria-hidden="true" /></Link>
         <p class="nav-label nav-next-label">AKAN DIINTEGRASIKAN</p>
-        <div class="nav-disabled" title="Fitur akan tersedia pada fase integrasi berikutnya"><span>Absensi · Persetujuan</span><small>Berikutnya</small></div>
+        <div class="nav-disabled" title="Fitur akan tersedia pada fase integrasi berikutnya"><span>Persetujuan</span><small>Berikutnya</small></div>
         <div class="nav-disabled" title="Fitur akan tersedia pada fase integrasi berikutnya"><span>Keuangan · Pengumuman</span><small>Berikutnya</small></div>
         <div class="nav-disabled" title="Fitur akan tersedia pada fase integrasi berikutnya"><span>Laporan · Ekspor</span><small>Berikutnya</small></div>
       </nav>
