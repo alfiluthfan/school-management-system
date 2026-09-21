@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\V1\SppPaymentVoidApprovalController;
 use App\Http\Controllers\Api\V1\SppPaymentCorrectionApprovalController;
 use App\Http\Controllers\Api\V1\TeacherAttendanceController;
 use App\Http\Controllers\Api\V1\AnnouncementController;
+use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\ReportController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -86,6 +88,60 @@ Route::prefix('v1')
                     'api.v1.admin.notifications.retry'
                 );
             });
+
+        Route::get(
+            '/dashboard/overview',
+            [
+                DashboardController::class,
+                'overview',
+            ]
+        )->name(
+            'api.v1.dashboard.overview'
+        );
+
+        Route::prefix('reports')
+            ->group(function (): void {
+                Route::get(
+                    '/attendance/students',
+                    [
+                        ReportController::class,
+                        'studentAttendance',
+                    ]
+                )->name(
+                    'api.v1.reports.attendance.students'
+                );
+
+                Route::get(
+                    '/attendance/teachers',
+                    [
+                        ReportController::class,
+                        'teacherAttendance',
+                    ]
+                )->name(
+                    'api.v1.reports.attendance.teachers'
+                );
+
+                Route::get(
+                    '/savings',
+                    [
+                        ReportController::class,
+                        'savings',
+                    ]
+                )->name(
+                    'api.v1.reports.savings'
+                );
+
+                Route::get(
+                    '/spp',
+                    [
+                        ReportController::class,
+                        'spp',
+                    ]
+                )->name(
+                    'api.v1.reports.spp'
+                );
+            });
+
 
         Route::prefix('announcements')
             ->group(function (): void {
