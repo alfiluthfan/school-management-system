@@ -24,4 +24,6 @@ if (
         ->timezone(config('app.timezone'))
         ->withoutOverlapping(30)
         ->onOneServer();
+
+    Schedule::command('reports:prune-exports')->dailyAt('02:00')->withoutOverlapping();
 }

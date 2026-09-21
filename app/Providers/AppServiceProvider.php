@@ -14,6 +14,7 @@ use App\Models\Finance\SppBill;
 use App\Models\Communication\NotificationLog;
 use App\Models\System\Approval;
 use App\Models\Communication\Announcement;
+use App\Models\Reporting\ReportExport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
             'notification_log'   => NotificationLog::class,
             'approval' => Approval::class,
             'announcement' => Announcement::class,
+            'report_export' => ReportExport::class,
         ]);
     }
 }

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\TeacherAttendanceController;
 use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\ReportExportController;
 
 Route::prefix('v1')
     ->middleware('auth')
@@ -142,6 +143,17 @@ Route::prefix('v1')
                 );
             });
 
+
+        Route::prefix('report-exports')->group(function (): void {
+            Route::get('/', [ReportExportController::class, 'index'])
+                ->name('api.v1.report-exports.index');
+            Route::post('/', [ReportExportController::class, 'store'])
+                ->name('api.v1.report-exports.store');
+            Route::get('/{reportExport}', [ReportExportController::class, 'show'])
+                ->name('api.v1.report-exports.show');
+            Route::get('/{reportExport}/download', [ReportExportController::class, 'download'])
+                ->name('api.v1.report-exports.download');
+        });
 
         Route::prefix('announcements')
             ->group(function (): void {
