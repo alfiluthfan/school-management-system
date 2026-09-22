@@ -142,33 +142,6 @@ final class MasterDataPageQuery
             $options['roles'] = Role::query()->orderBy('name')->get(['name', 'display_name'])
                 ->map(fn ($role): array => ['value' => $role->name, 'label' => $role->display_name])->all();
         }
-        $role = match ($kind) { 'students' => 'student', 'teachers' => 'teacher', 'parents' => 'parent', default => null };
-        if ($role && Catalog::canCreate($actor, $kind)) {
-            $options['users'] = User::query()->where('is_active', true)
-                ->whereHas('roles', fn (Builder $r) => $r->where('name', $role))
-                ->whereDoesntHave(match ($kind) { 'students' => 'student', 'teachers' => 'teacher', 'parents' => 'guardian' })
-                ->orderBy('name')->limit(250)->get(['id','uuid','name','username'])
-                ->map(fn ($u): array => ['value' => $u->uuid, 'label' => $u->name.' ('.$u->username.')'])->all();
-        }
-        if ($kind === 'classes' && Catalog::canCreate($actor, $kind) ||
-            $kind === 'classes' && Catalog::canUpdate($actor, $kind)) {
-            $options['years'] = AcademicYear::query()->orderByDesc('start_date')->limit(200)->get(['id','name'])
-                ->map(fn ($year): array => ['value' => $year->id, 'label' => $year->name])->all();
-            $options['teachers'] = Teacher::query()->where('status', 'ACTIVE')->with('user')
-                ->orderBy('nip')->limit(250)->get()->map(fn ($t): array => [
-                    'value' => $t->uuid, 'label' => ($t->user?->name ?? $t->nip).' · '.$t->nip,
-                ])->all();
-        }
-        if ($kind === 'students' && $actor->hasPermission('student.update') && $actor->hasPermission('class.view.all')) {
-            $options['classes'] = SchoolClass::query()->where('status', 'ACTIVE')->with('academicYear')
-                ->orderBy('code')->limit(250)->get()->map(fn ($c): array => [
-                    'value' => $c->uuid, 'label' => $c->name.' · '.$c->academicYear?->name,
-                ])->all();
-        }
-        if ($kind === 'parents' && $actor->hasPermission('parent.update') && $actor->hasPermission('student.view.all')) {
-            $options['students'] = Student::query()->with('user')->orderBy('nis')->limit(250)->get()
-                ->map(fn ($s): array => ['value' => $s->uuid, 'label' => ($s->user?->name ?? '-').' · '.$s->nis])->all();
-        }
         return [
             ...$options,
             'genders' => Gender::options(),

@@ -67,6 +67,8 @@ final class PortalAuthController extends Controller
 
         RateLimiter::clear($key);
         $request->session()->regenerate();
+        // Save the current server-side revision after session ID regeneration.
+        $request->session()->put('portal.auth_version', (int) $user->portal_session_version);
         $user->forceFill(['last_login_at' => now()])->save();
 
         return redirect()->intended(route('portal.dashboard'));

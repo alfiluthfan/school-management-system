@@ -15,6 +15,7 @@ use App\Models\Auth\User;
 use App\Services\System\AuditLogger;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -65,6 +66,10 @@ final class ManageMasterDataAction
                         $this->assertAnotherAdmin($user);
                     }
                     $user->roles()->sync($roleModels->modelKeys());
+                    if (! $isNew && $currentRoles !== $requestedRoles) {
+                        // Role changes must not leave privileged sessions alive.
+                        $this->revokeWebSessions($user);
+                    }
                 }
                 $this->audit->log($actor, 'master-user', $isNew ? 'CREATE' : 'UPDATE', $user,
                     null, ['uuid' => $user->uuid, 'changed_fields' => array_keys($attributes),
@@ -166,6 +171,10 @@ final class ManageMasterDataAction
             }
             $old = $locked->is_active;
             $locked->update(['is_active' => $active]);
+            if (! $active && $old) {
+                // A later reactivation must not resurrect an old session.
+                $this->revokeWebSessions($locked);
+            }
             $this->audit->log($actor, 'master-user', $active ? 'ACTIVATE' : 'DEACTIVATE', $locked,
                 ['is_active' => $old], ['is_active' => $active]);
         }, 3);
@@ -189,10 +198,20 @@ final class ManageMasterDataAction
             if ($locked->is($actor)) {
                 throw ValidationException::withMessages(['password' => 'Gunakan fitur ubah kata sandi sendiri.']);
             }
-            $locked->update(['password' => $password]); // hashed cast in User model
+            $locked->forceFill(['password' => $password])->save(); // User's hashed cast.
+            $this->revokeWebSessions($locked);
             $this->audit->log($actor, 'master-user', 'RESET_PASSWORD', $locked,
                 null, ['password_reset' => true]); // NEVER log passwords.
         }, 3);
+    }
+
+    /** Invalidate all other web sessions and all persistent remember-me cookies. */
+    private function revokeWebSessions(User $user): void
+    {
+        $user->forceFill([
+            'portal_session_version' => (int) $user->portal_session_version + 1,
+            'remember_token' => Str::random(60),
+        ])->save();
     }
 
     public function activateYear(User $actor, AcademicYear $year): void

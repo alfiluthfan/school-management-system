@@ -17,6 +17,7 @@ use App\Http\Controllers\Web\PortalReportingController;
 use App\Http\Controllers\Web\PortalReportExportController;
 use App\Http\Controllers\Web\PortalMasterDataController;
 use App\Http\Controllers\Web\PortalMasterDataMutationController;
+use App\Http\Controllers\Web\PortalMasterDataOptionController;
 
 Route::get('/', fn() => redirect()->route('portal.dashboard'));
 
@@ -27,6 +28,10 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware(['auth', EnsurePortalAccountActive::class])->group(function (): void {
+
+    Route::get('/master-data/options', PortalMasterDataOptionController::class)
+        ->middleware('throttle:60,1')->name('portal.master-data.options');
+
     Route::get('/dashboard', PortalDashboardController::class)->name('portal.dashboard');
     Route::get('/modules', PortalModulesController::class)->name('portal.modules');
 

@@ -11,7 +11,11 @@ final class EnsurePortalAccountActive
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->is_active) {
+        $user = $request->user();
+        // Missing stamp maps to zero for sessions that predate this migration.
+        // Any password reset / deactivation increments the revision and revokes them.
+        if (! $user?->is_active ||
+            (int) $request->session()->get('portal.auth_version', 0) !== (int) $user->portal_session_version) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

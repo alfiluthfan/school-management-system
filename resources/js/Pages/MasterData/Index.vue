@@ -2,6 +2,7 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { Link, router, useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '../../Layouts/AppLayout.vue'
+import RemoteOptionSelect from '../../Components/MasterData/RemoteOptionSelect.vue'
 import { UsersRound, Search, Plus, Pencil, LockKeyhole, UserCheck, UserX,
   CalendarCheck2, Link2, GraduationCap, KeyRound, X, LoaderCircle,
   Info, AlertCircle, ArrowRight, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-vue-next'
@@ -49,6 +50,7 @@ const auxiliary = useForm({
   relationship: 'FATHER', is_primary_contact: false, receive_notification: true,
 })
 const choice = (key) => props.master.options?.[key] || []
+const remoteResource = key => ({ user_uuid: 'users', year_ref: 'years', teacher_uuid: 'teachers', class_uuid: 'classes', student_uuid: 'students' })[key]
 const text = (key, label, required = true) => ({ key, label, type: 'text', required })
 const date = (key, label, required = true) => ({ key, label, type: 'date', required })
 const select = (key, label, options, required = true) => ({ key, label, type: 'select', options, required })
@@ -239,6 +241,9 @@ const visibleActions = row => props.master.can.update ||
             <div class="md-fields"><div v-for="field in fields" :key="field.key" class="md-field" :class="{'md-field-wide': field.type === 'textarea' || field.type === 'roles'}">
               <label :for="`md-${field.key}`">{{ field.label }} <span v-if="field.required" aria-hidden="true">*</span></label>
               <template v-if="field.type === 'roles'"><div :id="`md-${field.key}`" class="md-roles"><label v-for="option in field.options" :key="option.value"><input v-model="form.roles" type="checkbox" :value="option.value" />{{ option.label }}</label></div></template>
+              <RemoteOptionSelect v-else-if="field.type === 'select' && remoteResource(field.key)"
+                :id="`md-${field.key}`" v-model="form[field.key]" :resource="remoteResource(field.key)" :context="kind"
+                :required="field.required" :invalid="!!form.errors[field.key]" />
               <select v-else-if="field.type === 'select'" :id="`md-${field.key}`" v-model="form[field.key]" :required="field.required" :aria-invalid="!!form.errors[field.key]"><option value="">{{ field.required ? 'Pilih opsi' : 'Tidak ditentukan' }}</option><option v-for="option in field.options" :key="option.value" :value="option.value">{{ option.label }}</option></select>
               <textarea v-else-if="field.type === 'textarea'" :id="`md-${field.key}`" v-model="form[field.key]" rows="3" :required="field.required" :aria-invalid="!!form.errors[field.key]" />
               <input v-else :id="`md-${field.key}`" v-model="form[field.key]" :type="field.type" :required="field.required" :aria-invalid="!!form.errors[field.key]" :autocomplete="field.type === 'password' ? 'new-password' : 'off'" />
@@ -253,6 +258,9 @@ const visibleActions = row => props.master.can.update ||
           <form class="md-dialog-content" @submit.prevent="submitSpecial"><p class="md-form-help">{{ specialMode === 'enroll' ? 'Siswa tidak boleh memiliki dua enrollment aktif pada tahun ajaran yang sama.' : specialMode === 'password' ? 'Kata sandi baru harus dibagikan melalui kanal aman, tidak disimpan di audit log.' : 'Pilih siswa yang terhubung dan tentukan kontak utama.' }}</p>
             <div class="md-fields"><div v-for="field in specialFields" :key="field.key" class="md-field md-field-wide"><label :for="`sp-${field.key}`">{{ field.label }}</label>
               <input v-if="field.type === 'checkbox'" :id="`sp-${field.key}`" v-model="auxiliary[field.key]" type="checkbox" />
+              <RemoteOptionSelect v-else-if="field.type === 'select' && remoteResource(field.key)"
+                  :id="`sp-${field.key}`" v-model="auxiliary[field.key]" :resource="remoteResource(field.key)" :context="kind"
+                  :required="true" :invalid="!!auxiliary.errors[field.key]" />
               <select v-else-if="field.type === 'select'" :id="`sp-${field.key}`" v-model="auxiliary[field.key]" required><option value="">Pilih opsi</option><option v-for="option in field.options" :key="option.value" :value="option.value">{{ option.label }}</option></select>
               <input v-else :id="`sp-${field.key}`" v-model="auxiliary[field.key]" :type="field.type" required :autocomplete="field.type === 'password' ? 'new-password' : 'off'" />
               <small v-if="auxiliary.errors[field.key]" class="md-field-error" role="alert">{{ auxiliary.errors[field.key] }}</small>
