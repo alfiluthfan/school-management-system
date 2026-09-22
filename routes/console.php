@@ -26,4 +26,5 @@ if (
         ->onOneServer();
 
     Schedule::command('reports:prune-exports')->dailyAt('02:00')->withoutOverlapping();
+    Schedule::command('portal:ops:beat')->everyMinute()->withoutOverlapping();
 }
