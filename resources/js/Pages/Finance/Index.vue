@@ -1,10 +1,11 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
-import { Wallet, ReceiptText, Search, Filter, RotateCcw, ChevronLeft, ChevronRight, ArrowUpRight, Inbox, ShieldCheck } from 'lucide-vue-next'
+import { Wallet, ReceiptText, Search, Filter, RotateCcw, ChevronLeft, ChevronRight, ArrowUpRight, Inbox, ShieldCheck, Banknote } from 'lucide-vue-next'
 import AppLayout from '../../Layouts/AppLayout.vue'
 import { rupiah, localDateTime } from '../../lib/format.js'
 import '../../../css/finance.css'
+import '../../../css/finance-cashier.css'
 
 const props = defineProps({ finance: { type: Object, required: true } })
 const filters = reactive({ ...props.finance.filters })
@@ -29,6 +30,7 @@ const period = item => `${String(item.period?.month ?? '').padStart(2, '0')}/${i
 <template>
   <AppLayout title="Keuangan" subtitle="Saldo tabungan dan tagihan SPP yang diizinkan untuk akun Anda.">
     <div class="finance-page">
+      <div v-if="finance.cashier_available" class="finance-cashier-link"><Link href="/finance/cashier" class="button button-primary"><Banknote :size="17"/> Kasir: catat setoran / pembayaran</Link></div>
       <nav class="finance-tabs" aria-label="Jenis data keuangan">
         <Link v-for="tab in finance.tabs" :key="tab.type" :href="`/finance?type=${tab.type}`" class="finance-tab"
           :class="{ selected: type === tab.type }" :aria-current="type === tab.type ? 'page' : undefined">

@@ -27,4 +27,8 @@ if (
 
     Schedule::command('reports:prune-exports')->dailyAt('02:00')->withoutOverlapping();
     Schedule::command('portal:ops:beat')->everyMinute()->withoutOverlapping();
+    Schedule::command('spp:generate-monthly')
+        ->monthlyOn(1, '00:01')
+        ->timezone('Asia/Jakarta')
+        ->withoutOverlapping();
 }

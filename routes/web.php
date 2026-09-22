@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\PortalReportExportController;
 use App\Http\Controllers\Web\PortalMasterDataController;
 use App\Http\Controllers\Web\PortalMasterDataMutationController;
 use App\Http\Controllers\Web\PortalMasterDataOptionController;
+use App\Http\Controllers\Web\PortalFinanceCashierController;
 
 Route::get('/', fn() => redirect()->route('portal.dashboard'));
 
@@ -124,6 +125,13 @@ Route::middleware(['auth', EnsurePortalAccountActive::class])->group(function ()
         ->name('portal.master-data.students.enroll');
     Route::post('/master-data/parents/{guardian}/students', [PortalMasterDataMutationController::class, 'linkParent'])
         ->name('portal.master-data.parents.students.store');
+
+    Route::get('/finance/cashier', [PortalFinanceCashierController::class, 'index'])
+        ->name('portal.finance.cashier.index');
+    Route::post('/finance/cashier/savings', [PortalFinanceCashierController::class, 'savings'])
+        ->middleware('throttle:20,1')->name('portal.finance.cashier.savings');
+    Route::post('/finance/cashier/spp', [PortalFinanceCashierController::class, 'spp'])
+        ->middleware('throttle:20,1')->name('portal.finance.cashier.spp');
 
     Route::post('/logout', [PortalAuthController::class, 'destroy'])->name('portal.logout');
 });

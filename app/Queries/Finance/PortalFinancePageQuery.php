@@ -63,6 +63,9 @@ final class PortalFinancePageQuery
             ->paginate((int) ($filters['per_page'] ?? 20))->withQueryString();
         return [
             'type' => $type, 'tabs' => $tabs, 'summary' => $summary,
+            'cashier_available' => $user->hasPermission('student.view.all') && (
+                $user->hasPermission('saving.deposit.create') || $user->hasPermission('saving.withdrawal.create')
+                || $user->hasPermission('spp.payment.create')), 
             'filters' => [
                 'search' => $filters['search'] ?? '', 'status' => $status,
                 'from' => $filters['from'] ?? '', 'to' => $filters['to'] ?? '',
@@ -105,7 +108,7 @@ final class PortalFinancePageQuery
         $account->load('student.user');
         $canReadHistory = Gate::forUser($user)->allows('viewAny', SavingTransaction::class);
         $history = $canReadHistory ? SchoolDataScope::savingTransactions($user)
-            ->where('saving_account_id', $account->id)
+            ->where('saving_account_id', $account->id)->with('creator:id,name')
             ->orderByDesc('transaction_date')->orderByDesc('id')->paginate(15)->withQueryString() : null;
         return [
             'account' => $this->account($account),
@@ -114,6 +117,7 @@ final class PortalFinancePageQuery
                 'type' => ['value' => $t->transaction_type->value, 'label' => $t->transaction_type->label()],
                 'amount' => $t->amount, 'balance_after' => $t->balance_after,
                 'date' => $t->transaction_date?->toIso8601String(), 'description' => $t->description,
+                'recorded_by' => $t->creator?->name,
                 'can_request_reversal' => Gate::forUser($user)->allows('void', $t)
                     && Gate::forUser($user)->allows('create', Approval::class)
                     && $t->status->value === 'POSTED' && $t->transaction_type->value !== 'REVERSAL',
@@ -134,7 +138,7 @@ final class PortalFinancePageQuery
         $bill->load('student.user');
         $canReadHistory = Gate::forUser($user)->allows('viewAny', SppPayment::class);
         $payments = $canReadHistory ? SchoolDataScope::sppPayments($user)
-            ->where('spp_bill_id', $bill->id)->orderByDesc('payment_date')
+            ->where('spp_bill_id', $bill->id)->with('creator:id,name')->orderByDesc('payment_date')
             ->orderByDesc('id')->paginate(15)->withQueryString() : null;
         return [
             'bill' => $this->bill($bill),
@@ -144,6 +148,7 @@ final class PortalFinancePageQuery
                 'method' => ['value' => $p->payment_method->value, 'label' => $p->payment_method->label()],
                 'status' => ['value' => $p->status->value, 'label' => $p->status->label()],
                 'date' => $p->payment_date?->toIso8601String(), 'notes' => $p->notes,
+                'recorded_by' => $p->creator?->name,
                 'can_request_void' => Gate::forUser($user)->allows('void', $p)
                     && Gate::forUser($user)->allows('create', Approval::class)
                     && $p->status->value === 'POSTED',
