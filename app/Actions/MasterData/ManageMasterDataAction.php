@@ -43,6 +43,9 @@ final class ManageMasterDataAction
                     $user->update($attributes);
                 }
                 if ($roles !== null) {
+                    if (count($roles) !== 1 || count(array_unique($roles)) !== 1) {
+                        throw ValidationException::withMessages(['roles' => 'Pilih tepat satu role untuk setiap akun.']);
+                    }
                     $currentRoles = $user->roles()->pluck('name')->sort()->values()->all();
                     $requestedRoles = collect($roles)->sort()->values()->all();
                     if (!$isNew && $actor->is($user) && $currentRoles !== $requestedRoles) {
@@ -88,8 +91,8 @@ final class ManageMasterDataAction
                         'students' => 'student', 'teachers' => 'teacher', 'parents' => 'guardian',
                     };
                     $role = match ($kind) { 'students' => 'student', 'teachers' => 'teacher', 'parents' => 'parent' };
-                    if (!$user->is_active || !$user->hasRole($role) || $user->{$relation}()->exists()) {
-                        throw ValidationException::withMessages(['user_uuid' => 'Akun tidak aktif, role tidak sesuai, atau profil sudah ada.']);
+                    if (!$user->is_active || $user->roles()->count() !== 1 || !$user->hasRole($role) || $user->{$relation}()->exists()) {
+                        throw ValidationException::withMessages(['user_uuid' => 'Akun harus aktif, memiliki tepat satu role yang sesuai, dan belum memiliki profil.']);
                     }
                     $attributes['user_id'] = $user->id;
                 } else {

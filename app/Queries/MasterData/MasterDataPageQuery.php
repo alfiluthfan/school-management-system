@@ -49,6 +49,7 @@ final class MasterDataPageQuery
             'tabs' => Catalog::tabs($actor),
             'can' => [
                 'create' => Catalog::canCreate($actor, $kind),
+                'onboard' => Catalog::canCreate($actor, 'users'),
                 'update' => Catalog::canUpdate($actor, $kind),
                 'assign_role' => $actor->hasPermission('role.assign'),
                 'activate_user' => $actor->hasPermission('user.activate'),
@@ -58,6 +59,7 @@ final class MasterDataPageQuery
                 'enroll' => $actor->hasPermission('student.update') && $actor->hasPermission('class.view.all'),
                 'link_parent' => $actor->hasPermission('parent.update') && $actor->hasPermission('student.view.all'),
             ],
+            'onboarding_roles' => $this->onboardingRoles($actor),
             'options' => $this->options($actor, $kind),
         ];
     }
@@ -68,6 +70,7 @@ final class MasterDataPageQuery
             'users' => [
                 'ref' => $model->uuid, 'title' => $model->name,
                 'subtitle' => $model->username.' · '.$model->email,
+                'role_label' => $model->roles->pluck('display_name')->implode(', '),
                 'status' => $model->is_active ? 'ACTIVE' : 'INACTIVE',
                 'fields' => [
                     'name' => $model->name, 'username' => $model->username,
@@ -133,6 +136,25 @@ final class MasterDataPageQuery
     private function enumValue(\BackedEnum|string|null $value): ?string
     {
         return $value instanceof \BackedEnum ? (string) $value->value : $value;
+    }
+
+    /** Return only roles this actor may create together with a required profile. */
+    private function onboardingRoles(User $actor): array
+    {
+        if (! Catalog::canCreate($actor, 'users')) {
+            return [];
+        }
+        $permissions = [
+            'student' => 'student.create', 'teacher' => 'teacher.create',
+            'parent' => 'parent.create', 'admin' => null, 'principal' => null,
+        ];
+        $eligible = array_keys(array_filter($permissions, fn ($permission) =>
+            $permission === null || $actor->hasPermission($permission)));
+        // array_filter above intentionally preserves the null-permission roles using predicate.
+        return Role::query()->whereIn('name', $eligible)->orderBy('name')
+            ->get(['name', 'display_name'])->map(fn ($role) => [
+                'value' => $role->name, 'label' => $role->display_name,
+            ])->all();
     }
 
     public function options(User $actor, string $kind): array

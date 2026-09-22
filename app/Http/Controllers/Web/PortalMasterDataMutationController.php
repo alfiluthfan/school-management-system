@@ -137,7 +137,7 @@ final class PortalMasterDataMutationController extends Controller
                 'phone' => [...$nullable, 'string', 'max:25'],
                 'password' => $create ? ['required', 'string', 'min:12', 'max:255', 'confirmed'] : ['prohibited'],
                 'password_confirmation' => $create ? ['required', 'string'] : ['prohibited'],
-                'roles' => $create ? ['required', 'array', 'min:1', 'max:5'] : ['sometimes', 'array', 'min:1', 'max:5'],
+                'roles' => $create ? ['required', 'array', 'size:1'] : ['sometimes', 'array', 'size:1'],
                 'roles.*' => ['required', 'string', 'distinct', Rule::exists('roles', 'name')],
                 'is_active' => ['prohibited'],
             ],
