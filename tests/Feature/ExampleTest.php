@@ -14,7 +14,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        dump($response->headers->get('Location'));
+        // dump($response->headers->get('Location'));
 
         $response->assertRedirect();
     }

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 import AppLayout from '../../Layouts/AppLayout.vue'
-import { ClipboardCheck, CheckCheck, Wallet, Megaphone, FileChartColumn, FileDown, LockKeyhole, CheckCircle2, ArrowUpRight } from 'lucide-vue-next'
+import { ClipboardCheck, CheckCheck, Wallet, Megaphone, FileChartColumn, FileDown, LockKeyhole, CheckCircle2, ArrowUpRight, Database } from 'lucide-vue-next'
 
 const page = usePage()
 const permissions = computed(() => page.props.auth?.user?.permissions ?? [])
@@ -13,6 +13,7 @@ const modules = [
   { title: 'Keuangan', href: '/finance', description: 'Saldo tabungan, tagihan SPP, dan transaksi.', icon: Wallet, permissions: ['saving.balance.view.all','saving.balance.view.own','saving.balance.view.child','spp.bill.view.all','spp.bill.view.own','spp.bill.view.child'] },
   { title: 'Pengumuman', href: '/announcements', description: 'Berita sekolah dan kelas berdasarkan audience.', icon: Megaphone, permissions: ['announcement.view'] },
   { title: 'Laporan', href: '/reports', description: 'Analitik kehadiran, SPP, dan tabungan.', icon: FileChartColumn, permissions: ['report.attendance.student','report.attendance.teacher','report.saving','report.spp'] },
+  { title: 'Master Data', href: '/master-data', description: 'Akun, profil akademik, kelas, dan tahun ajaran.', icon: Database, permissions: ['user.view.all','student.view.all','student.view.class','teacher.view.all','parent.view.all','class.view.all','class.view.assigned','academic-year.view'] },
   { title: 'Ekspor laporan', href: '/reports', description: 'Antrean PDF/Excel dengan download privat.', icon: FileDown, permissions: ['report.export.pdf','report.export.excel'] },
 ]
 </script>

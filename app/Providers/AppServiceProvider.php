@@ -31,7 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Kode Morph Map diletakkan di dalam method boot()
         Relation::enforceMorphMap([
             'student_attendance' => StudentAttendance::class,
             'teacher_attendance' => TeacherAttendance::class,
@@ -44,6 +43,13 @@ class AppServiceProvider extends ServiceProvider
             'approval' => Approval::class,
             'announcement' => Announcement::class,
             'report_export' => ReportExport::class,
+            'user' => \App\Models\Auth\User::class,
+            'student' => \App\Models\Academic\Student::class,
+            'teacher' => \App\Models\Academic\Teacher::class,
+            'parent' => \App\Models\Academic\Guardian::class,
+            'school_class' => \App\Models\Academic\SchoolClass::class,
+            'academic_year' => \App\Models\Academic\AcademicYear::class,
+            'student_class_enrollment' => \App\Models\Academic\StudentClassEnrollment::class,
         ]);
     }
 }

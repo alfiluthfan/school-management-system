@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
-import { LayoutDashboard, Boxes, ClipboardCheck, GraduationCap, Menu, X, LogOut, ChevronRight, PanelLeftClose, ShieldCheck, CheckCheck, Wallet, Megaphone, FileChartColumn } from 'lucide-vue-next'
+import { LayoutDashboard, Boxes, ClipboardCheck, GraduationCap, Menu, X, LogOut, ChevronRight, PanelLeftClose, ShieldCheck, CheckCheck, Wallet, Megaphone, FileChartColumn, Database } from 'lucide-vue-next'
 
 const props = defineProps({ title: { type: String, default: 'Dashboard' }, subtitle: { type: String, default: '' } })
 const page = usePage()
@@ -20,6 +20,7 @@ onMounted(() => {
   offNavigate = router.on('navigate', () => { drawerOpen.value = false })
 })
 onUnmounted(() => { offStart?.(); offFinish?.(); offNavigate?.() })
+const canMaster = computed(() => ['user.view.all','student.view.all','student.view.class','teacher.view.all','parent.view.all','class.view.all','class.view.assigned','academic-year.view'].some(permission => user.value?.permissions?.includes(permission)))
 const canReports = computed(() => ['report.attendance.student', 'report.attendance.teacher', 'report.saving', 'report.spp'].some(permission => user.value?.permissions?.includes(permission)))
 const canAnnouncements = computed(() => user.value?.permissions?.includes('announcement.view'))
 const canFinance = computed(() => ['saving.balance.view.all', 'saving.balance.view.own', 'saving.balance.view.child', 'spp.bill.view.all', 'spp.bill.view.own', 'spp.bill.view.child'].some(permission => user.value?.permissions?.includes(permission)))
@@ -43,6 +44,7 @@ const active = (route) => page.url === route || page.url.startsWith(`${route}?`)
         <Link v-if="canApprovals" class="nav-link" href="/approvals" :class="{ 'nav-active': active('/approvals') }" :aria-current="active('/approvals') ? 'page' : undefined"><CheckCheck :size="19" aria-hidden="true" /><span>Persetujuan</span><ChevronRight v-if="active('/approvals')" :size="15" class="nav-chevron" aria-hidden="true" /></Link>
         <Link v-if="canFinance" class="nav-link" href="/finance" :class="{ 'nav-active': active('/finance') || page.url.startsWith('/finance/') }" :aria-current="active('/finance') || page.url.startsWith('/finance/') ? 'page' : undefined"><Wallet :size="19" aria-hidden="true"/><span>Keuangan</span><ChevronRight v-if="active('/finance') || page.url.startsWith('/finance/')" :size="15" class="nav-chevron" aria-hidden="true"/></Link>
         <Link v-if="canAnnouncements" class="nav-link" href="/announcements" :class="{ 'nav-active': active('/announcements') || page.url.startsWith('/announcements/') }" :aria-current="active('/announcements') || page.url.startsWith('/announcements/') ? 'page' : undefined"><Megaphone :size="19" aria-hidden="true"/><span>Pengumuman</span><ChevronRight v-if="active('/announcements') || page.url.startsWith('/announcements/')" :size="15" class="nav-chevron" aria-hidden="true"/></Link>
+        <Link v-if="canMaster" class="nav-link" href="/master-data" :class="{ 'nav-active': active('/master-data') }" :aria-current="active('/master-data') ? 'page' : undefined"><Database :size="19" aria-hidden="true"/><span>Master Data</span><ChevronRight v-if="active('/master-data')" :size="15" class="nav-chevron" aria-hidden="true"/></Link>
         <Link v-if="canReports" class="nav-link" href="/reports" :class="{ 'nav-active': active('/reports') || page.url.startsWith('/reports/') }" :aria-current="active('/reports') || page.url.startsWith('/reports/') ? 'page' : undefined"><FileChartColumn :size="19" aria-hidden="true"/><span>Laporan & Ekspor</span><ChevronRight v-if="active('/reports') || page.url.startsWith('/reports/')" :size="15" class="nav-chevron" aria-hidden="true"/></Link>
       </nav>
       <div class="sidebar-bottom"><div class="sidebar-secure"><ShieldCheck :size="18" aria-hidden="true"/><span>Data mengikuti izin akses server.</span></div><div class="sidebar-account"><div class="avatar" aria-hidden="true">{{ initials }}</div><div class="user-summary"><strong>{{ user?.name }}</strong><span>{{ role }}</span></div><Link href="/logout" method="post" as="button" type="button" class="logout-button" title="Keluar" aria-label="Keluar dari akun"><LogOut :size="19" aria-hidden="true" /></Link></div></div>

@@ -15,6 +15,8 @@ use App\Http\Controllers\Web\PortalAnnouncementController;
 use App\Http\Controllers\Web\PortalAnnouncementActionController;
 use App\Http\Controllers\Web\PortalReportingController;
 use App\Http\Controllers\Web\PortalReportExportController;
+use App\Http\Controllers\Web\PortalMasterDataController;
+use App\Http\Controllers\Web\PortalMasterDataMutationController;
 
 Route::get('/', fn() => redirect()->route('portal.dashboard'));
 
@@ -100,6 +102,23 @@ Route::middleware(['auth', EnsurePortalAccountActive::class])->group(function ()
         ->name('portal.reports.exports.status');
     Route::get('/reports/exports/{reportExport}/download', [PortalReportExportController::class, 'download'])
         ->name('portal.reports.exports.download');
+
+    Route::get('/master-data', [PortalMasterDataController::class, 'index'])
+        ->name('portal.master-data.index');
+    Route::post('/master-data/{kind}', [PortalMasterDataMutationController::class, 'store'])
+        ->name('portal.master-data.store');
+    Route::patch('/master-data/{kind}/{ref}', [PortalMasterDataMutationController::class, 'update'])
+        ->name('portal.master-data.update');
+    Route::patch('/master-data/users/{user}/state', [PortalMasterDataMutationController::class, 'userState'])
+        ->name('portal.master-data.users.state');
+    Route::post('/master-data/users/{user}/reset-password', [PortalMasterDataMutationController::class, 'resetPassword'])
+        ->middleware('throttle:5,1')->name('portal.master-data.users.reset-password');
+    Route::post('/master-data/years/{year}/activate', [PortalMasterDataMutationController::class, 'activateYear'])
+        ->name('portal.master-data.years.activate');
+    Route::post('/master-data/students/{student}/enrollments', [PortalMasterDataMutationController::class, 'enroll'])
+        ->name('portal.master-data.students.enroll');
+    Route::post('/master-data/parents/{guardian}/students', [PortalMasterDataMutationController::class, 'linkParent'])
+        ->name('portal.master-data.parents.students.store');
 
     Route::post('/logout', [PortalAuthController::class, 'destroy'])->name('portal.logout');
 });
